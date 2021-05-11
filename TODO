@@ -1,0 +1,25 @@
+1. [X] Add fields.
+2. [ ] Test with json file.
+3. [ ] Write some tests.
+4. [ ] Add item details.
+
+Fields:
+
+	InfoUpdateDate	تاریخ بروز رسانی اطلاعات
+	ProductPageLink	آدرس صفحه محصول
+	[X] ProductName	نام محصول
+	[X] Productcode	کد محصول
+	[X] BrandNameFa	نام برند فارسی
+	[X] BrandNameEn	نام برند انگلیسی
+	Group	گروه
+	[X] CommentOwnerId	نام و یا آی دی ارسال کننده کامنت
+	[X] CommentDate	تاریخ ارسال کامنت
+	[X] CommentDescription	متن کامنت
+	[-] CommentLike	تعداد لایک کامنت
+	reason: It’s always zero and it’s useless
+			would be like a matrix spars
+
+
+Approach:
+	
+	-		
