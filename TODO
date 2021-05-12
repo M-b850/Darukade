@@ -11,7 +11,7 @@ Fields:
 	[X] Productcode	کد محصول
 	[X] BrandNameFa	نام برند فارسی
 	[X] BrandNameEn	نام برند انگلیسی
-	Group	گروه
+	[X] Group	گروه
 	[X] CommentOwnerId	نام و یا آی دی ارسال کننده کامنت
 	[X] CommentDate	تاریخ ارسال کامنت
 	[X] CommentDescription	متن کامنت

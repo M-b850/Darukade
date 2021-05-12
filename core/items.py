@@ -26,18 +26,37 @@ def get_data(urls):
     return response
 
 
+def find_mic_detail(status, pos):
+    if pos == 2:
+        tmp = status.split()
+        tmp.pop(1)
+        tmp.pop(0)
+        res = ' '.join(tmp)
+        return res
+    if pos == 1:
+        tmp = status.split()
+        tmp.pop(0)
+        res = ' '.join(tmp)
+        return res
+
+
 def parse(data):
     """Parse and return all comments."""    
     only_item_cells = Strainer('div', attrs={'class': 'comment-box'})
     info_item_cell = Strainer('div', attrs={'class', 'title-layer'})
     brand_item_cell = Strainer('div', attrs={'class', 'right'})
+    group_item_cell = Strainer('section', attrs={'class', 'accordion-layer'})
     comments = []
 
     for d in data:
         detail = Soup(d.text, 'html.parser', parse_only=info_item_cell)
         detail_brand = Soup(d.text, 'html.parser', parse_only=brand_item_cell).text.strip()
         raw_comments = Soup(d.text, 'html.parser', parse_only=only_item_cells)
+        group_item = Soup(d.text, 'html.parser', parse_only=group_item_cell)
 
+        for group in group_item.find_all('div', {'class': 'each-row'}):
+            if 'گروه' in group.text:
+                Group = find_mic_detail(group.text.strip(), 1)
         # It contains detail so spilt them by \n
         object_comment = {
             'ProductPageLink': None,
@@ -45,6 +64,7 @@ def parse(data):
             'Productcode': detail.find('span', {'class': 'code'}).text.strip(),
             'BrandNameFa': detail_brand.split('-')[0].strip(),
             'BrandNameEn': detail_brand.split('-')[1].strip(),
+            'Group': Group,
             'Comments': None,
         }
         
@@ -66,7 +86,6 @@ def parse(data):
                 all_comments.append(user_comment)
         object_comment['Comments'] = all_comments
         return object_comment
-
 
 resp = get_data(l.links)
 result = parse(resp)
