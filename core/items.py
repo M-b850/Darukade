@@ -46,9 +46,12 @@ def parse(data):
     info_item_cell = Strainer('div', attrs={'class', 'title-layer'})
     brand_item_cell = Strainer('div', attrs={'class', 'right'})
     group_item_cell = Strainer('section', attrs={'class', 'accordion-layer'})
-    comments = []
+    allres = []
 
     for d in data:
+        comments = []
+        count = 0
+
         detail = Soup(d.text, 'html.parser', parse_only=info_item_cell)
         detail_brand = Soup(d.text, 'html.parser', parse_only=brand_item_cell).text.strip()
         raw_comments = Soup(d.text, 'html.parser', parse_only=only_item_cells)
@@ -59,7 +62,7 @@ def parse(data):
                 Group = find_mic_detail(group.text.strip(), 1)
         # It contains detail so spilt them by \n
         object_comment = {
-            'ProductPageLink': None,
+            'ProductPageLink': l.links[count],
             'ProductName': detail.find('h1').text.strip(),
             'Productcode': detail.find('span', {'class': 'code'}).text.strip(),
             'BrandNameFa': detail_brand.split('-')[0].strip(),
@@ -67,6 +70,7 @@ def parse(data):
             'Group': Group,
             'Comments': None,
         }
+        count += 1 # For links navigation
         
         all_comments = []
         for r in raw_comments:
@@ -81,11 +85,12 @@ def parse(data):
                     'CommentOwnerId': ids[i].text.strip().split('\n')[0].strip(),
                     # It contains datetime so spilt them by \n
                     'CommentDate': ids[i].text.strip().split('\n')[1].strip(),
-                    'CommentDescription': descriptions[i].text.strip()
+                    'CommentDescription': descriptions[i].text.strip().replace("\n", "")
                 }   
                 all_comments.append(user_comment)
         object_comment['Comments'] = all_comments
-        return object_comment
+        allres.append(object_comment)
+    return allres
 
 resp = get_data(l.links)
 result = parse(resp)
