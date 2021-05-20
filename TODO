@@ -1,12 +1,12 @@
 1. [X] Add fields.
-2. [ ] Test with json file.
+2. [X] Test with json file.
 3. [ ] Write some tests.
 4. [ ] Add item details.
 
 Fields:
 
 	InfoUpdateDate	تاریخ بروز رسانی اطلاعات
-	ProductPageLink	آدرس صفحه محصول
+	[X]ProductPageLink	آدرس صفحه محصول
 	[X] ProductName	نام محصول
 	[X] Productcode	کد محصول
 	[X] BrandNameFa	نام برند فارسی

@@ -2,13 +2,14 @@
 
 import time
 import os
-import json
 
 from bs4 import BeautifulSoup as Soup
 from bs4 import SoupStrainer as Strainer
 
 import grequests
 
+import exporter
+import links as li
 
 # Start the Timer
 start_time = time.perf_counter()
@@ -17,7 +18,6 @@ start_time = time.perf_counter()
 dir_path = os.path.dirname(os.path.realpath(__file__))
 file = f"{dir_path}"
 
-import links as l
 
 def get_data(urls):
     """Get data of urls with grequests."""
@@ -41,28 +41,26 @@ def find_mic_detail(status, pos):
 
 
 def parse(data):
-    """Parse and return all comments."""    
+    """ Parse and return all comments. """
     only_item_cells = Strainer('div', attrs={'class': 'comment-box'})
     info_item_cell = Strainer('div', attrs={'class', 'title-layer'})
     brand_item_cell = Strainer('div', attrs={'class', 'right'})
     group_item_cell = Strainer('section', attrs={'class', 'accordion-layer'})
     allres = []
+    count = 0
 
     for d in data:
-        comments = []
-        count = 0
-
         detail = Soup(d.text, 'html.parser', parse_only=info_item_cell)
         detail_brand = Soup(d.text, 'html.parser', parse_only=brand_item_cell).text.strip()
         raw_comments = Soup(d.text, 'html.parser', parse_only=only_item_cells)
         group_item = Soup(d.text, 'html.parser', parse_only=group_item_cell)
-
-        for group in group_item.find_all('div', {'class': 'each-row'}):
+        for group in group_item.find_all('div', {'class': 'each-row'}):            # Group = None
             if 'گروه' in group.text:
                 Group = find_mic_detail(group.text.strip(), 1)
+
         # It contains detail so spilt them by \n
         object_comment = {
-            'ProductPageLink': l.links[count],
+            'ProductPageLink': li.links[count],
             'ProductName': detail.find('h1').text.strip(),
             'Productcode': detail.find('span', {'class': 'code'}).text.strip(),
             'BrandNameFa': detail_brand.split('-')[0].strip(),
@@ -70,8 +68,8 @@ def parse(data):
             'Group': Group,
             'Comments': None,
         }
-        count += 1 # For links navigation
-        
+        count += 1  # For links navigation
+
         all_comments = []
         for r in raw_comments:
             """ Each comment-box in page """
@@ -86,19 +84,17 @@ def parse(data):
                     # It contains datetime so spilt them by \n
                     'CommentDate': ids[i].text.strip().split('\n')[1].strip(),
                     'CommentDescription': descriptions[i].text.strip().replace("\n", "")
-                }   
+                }
                 all_comments.append(user_comment)
         object_comment['Comments'] = all_comments
         allres.append(object_comment)
     return allres
 
-resp = get_data(l.links)
+
+resp = get_data(li.links)
 result = parse(resp)
 
-# Serializing json   
-with open('tests/output.json', 'w') as f:
-    # json_object = json.dumps(result, ensure_ascii=False, indent=4)
-    json.dump(result, f, ensure_ascii=False, indent=4)
+exporter.export_exel(result)
 
 fin = time.perf_counter() - start_time
 print(f'Process finished. \n --- {fin} seconds ---')
