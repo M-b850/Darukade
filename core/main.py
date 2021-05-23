@@ -54,7 +54,7 @@ def main(data):
     mydb.select_database('darukade')
     with alive_bar(4651) as bar:
         for d in data:
-            print(li.links[count])
+            print(all_links[count])
             detail = Soup(d.text, 'html.parser', parse_only=info_item_cell)
             detail_brand = Soup(d.text, 'html.parser', parse_only=brand_item_cell).text.strip()
             raw_comments = Soup(d.text, 'html.parser', parse_only=only_item_cells)
@@ -82,7 +82,7 @@ def main(data):
                         """ Each comment box content """
                         user_comment = {
                             'InfoUpdateDate': datetime.datetime.utcnow(),
-                            'ProductPageLink': li.links[count],
+                            'ProductPageLink': all_links[count],
                             'ProductName': detail.find('h1').text.strip(),
                             'Productcode': detail.find('span', {'class': 'code'}).text.strip(),
                             'BrandNameFa': detail_brand.split('-')[0].strip(),
@@ -117,7 +117,7 @@ def main(data):
                         """ Each comment box content """
                         user_comment = {
                             'InfoUpdateDate': datetime.datetime.utcnow(),
-                            'ProductPageLink': li.links[count],
+                            'ProductPageLink': all_links[count],
                             'ProductName': detail.find('h1').text.strip(),
                             'Productcode': detail.find('span', {'class': 'code'}).text.strip(),
                             'BrandNameFa': detail_brand.split('-')[0].strip(),
@@ -132,7 +132,7 @@ def main(data):
 
                 item_detail = {
                             'Productcode': Productcode,
-                            'ProductPageLink': li.links[count],
+                            'ProductPageLink': all_links[count],
                             'Count': count_all,
                             }
                 mydb.items_col()
