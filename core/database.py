@@ -49,6 +49,7 @@ class DB:
 		db = self.client['REFWebsites']
 		col = db.websites
 		obj = col.find_one({'WebLink': website})
+		
 		if obj:
 			obj['LastUpdateDate'] = datetime
 			res = col.save(obj)
