@@ -151,7 +151,7 @@ if __name__ == '__main__':
     print('~~~ Links processed! ~~~\n')
     print('---------------------------')
     print('Wait for the responses...\n')
-    resp = get_data(li.links)
+    resp = get_data(links)
     print('~~~~~ 200 OK ~~~~~ \n\n')
     result = main(resp)
     
