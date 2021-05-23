@@ -7,3 +7,11 @@ links = [
     'https://www.darukade.com/products/supplement-liver-and-bile-953/softgel-sinaliv-70-20439',
     'https://www.darukade.com/products/supplement-zink-972/softgel-zinc-plus-vitamin-b-complex-and-vitamin-c-20435'
 ]
+
+def add_links():
+    file = 'src/links/supplements.txt'
+    with open(file) as f:
+        for link in f:
+            url = link.replace("\n", "")
+            links.append(link)
+    print("Done!")
