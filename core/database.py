@@ -2,7 +2,7 @@ from pymongo import MongoClient
 import datetime
 
 # Change the link if you're using diffrent database
-db_address = "mongodb://admin:password@localhost:8000/admin?authSource=admin"
+db_address = "mongodb://admin:password@localhost:8080/admin?authSource=admin"
 
 class DB:
 
@@ -48,9 +48,14 @@ class DB:
 		""" Update datetime in refweb. """
 		db = self.client['REFWebsites']
 		col = db.websites
-		doc = {'LastUpdateDate': datetime, 'WebLink': website}
-		return col.insert_one(doc)
+		obj = col.find_one({'WebLink': website})
+		if obj:
+			obj['LastUpdateDate'] = datetime
+			res = col.save(obj)
+		else:
+			doc = {'LastUpdateDate': datetime, 'WebLink': website}
+			res = col.insert_one(doc)
+		return res
 
 	def save(self, doc):
 		return self.col.save(doc)
-		
