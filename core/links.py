@@ -5,7 +5,8 @@ links = []
 
 def add_links():
    links = []
-   with open('src/links/supplements.txt', 'r') as f:
+   # supplements
+   with open('src/links/1.txt', 'r') as f:
       for line in f:
          links.append(line.strip())
    return links
