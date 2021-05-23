@@ -61,44 +61,14 @@ def main(data):
         for group in group_item.find_all('div', {'class': 'each-row'}):
             if 'گروه' in group.text:
                 Group = find_mic_detail(group.text.strip(), 1)
-
+        count_all = 0
         # Database
         Productcode = detail.find('span', {'class': 'code'}).text.strip()
         mydb.items_col()
         item = mydb.find_one({'Productcode': Productcode})
 
         if item:  # Item exist.
-            if item['Count'] < len(raw_comments):
-                for r in raw_comments:
-                    """ Each comment-box in page """
-                    ids = r.find_all('div', {'class': 'info'})
-                    descriptions = r.find_all('p', {'class': 'CommentsStyle1'})
-                    # There are n comments/descriptions in each comment-box
-                    n = len(descriptions) - item['Count']
-                    for i in range(n):
-                        """ Each comment box content """
-                        user_comment = {
-                            'InfoUpdateDate': datetime.datetime.utcnow(),
-                            'ProductPageLink': li.links[count],
-                            'ProductName': detail.find('h1').text.strip(),
-                            'Productcode': detail.find('span', {'class': 'code'}).text.strip(),
-                            'BrandNameFa': detail_brand.split('-')[0].strip(),
-                            'BrandNameEn': detail_brand.split('-')[1].strip(),
-                            'Group': Group,
-                            'CommentOwnerId': ids[i].text.strip().split('\n')[0].strip(),
-                            # It contains datetime so spilt them by \n
-                            'CommentDate': ids[i].text.strip().split('\n')[1].strip(),
-                            'CommentDescription': descriptions[i].text.strip().replace("\n", "")
-                        }
-                        mydb.insert_one(user_comment)
-
-        else:
-            item_detail = {
-                        'Productcode': Productcode,
-                        'ProductPageLink': li.links[count],
-                        'Count': len(raw_comments),
-                        }
-            mydb.insert_one(item_detail)
+            item_comments = []
             mydb.comments_col()
             for r in raw_comments:
                 """ Each comment-box in page """
@@ -106,9 +76,43 @@ def main(data):
                 descriptions = r.find_all('p', {'class': 'CommentsStyle1'})
                 # There are n comments/descriptions in each comment-box
                 n = len(descriptions)
+                count_all += n
                 for i in range(n):
                     """ Each comment box content """
                     user_comment = {
+                        'InfoUpdateDate': datetime.datetime.utcnow(),
+                        'ProductPageLink': li.links[count],
+                        'ProductName': detail.find('h1').text.strip(),
+                        'Productcode': detail.find('span', {'class': 'code'}).text.strip(),
+                        'BrandNameFa': detail_brand.split('-')[0].strip(),
+                        'BrandNameEn': detail_brand.split('-')[1].strip(),
+                        'Group': Group,
+                        'CommentOwnerId': ids[i].text.strip().split('\n')[0].strip(),
+                        # It contains datetime so spilt them by \n
+                        'CommentDate': ids[i].text.strip().split('\n')[1].strip(),
+                        'CommentDescription': descriptions[i].text.strip().replace("\n", "")
+                    }
+                    item_comments.append(user_comment)
+            if item['Count'] < count_all:
+                for i in range(count_all - item['Count']):
+                    mydb.insert_one(item_comments[i])
+                item['Count'] = count_all
+                mydb.items_col()
+                mydb.save(item)
+
+        else:
+            mydb.comments_col()
+            for r in raw_comments:
+                """ Each comment-box in page """
+                ids = r.find_all('div', {'class': 'info'})
+                descriptions = r.find_all('p', {'class': 'CommentsStyle1'})
+                # There are n comments/descriptions in each comment-box
+                n = len(descriptions)
+                count_all += n
+                for i in range(n):
+                    """ Each comment box content """
+                    user_comment = {
+                        'InfoUpdateDate': datetime.datetime.utcnow(),
                         'ProductPageLink': li.links[count],
                         'ProductName': detail.find('h1').text.strip(),
                         'Productcode': detail.find('span', {'class': 'code'}).text.strip(),
@@ -121,6 +125,15 @@ def main(data):
                         'CommentDescription': descriptions[i].text.strip().replace("\n", "")
                     }
                     mydb.insert_one(user_comment)
+
+            item_detail = {
+                        'Productcode': Productcode,
+                        'ProductPageLink': li.links[count],
+                        'Count': count_all,
+                        }
+            mydb.items_col()
+            mydb.insert_one(item_detail)
+            
 
                 # allres.append(user_comment)
         count += 1  # For links navigation
