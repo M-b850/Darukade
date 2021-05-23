@@ -50,3 +50,7 @@ class DB:
 		col = db.websites
 		doc = {'LastUpdateDate': datetime, 'WebLink': website}
 		return col.insert_one(doc)
+
+	def save(self, doc):
+		return self.col.save(doc)
+		
