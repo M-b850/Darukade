@@ -10,7 +10,7 @@ from bs4 import BeautifulSoup as Soup
 from bs4 import SoupStrainer as Strainer
 
 from database import DB
-from utils import find_mic_detail, notenough
+from utils import find_mic_detail
 import links as li
 
 # Start the Timer
@@ -39,7 +39,7 @@ def main(data):
 
     # Database collection
     mydb.select_database('darukade')
-    with alive_bar(4651) as bar:
+    with alive_bar(4652) as bar:
         for d in data:
             print(all_links[count])
             detail = Soup(d.text, 'html.parser', parse_only=info_item_cell)
@@ -80,7 +80,6 @@ def main(data):
                         'CommentDate': dateuser[0].strip() if len(dateuser) == 1 else dateuser[1].strip(),
                         'CommentDescription': descriptions[i].text.strip().replace("\n", "")
                         }
-                        print(user_comment)
                         item_comments.append(user_comment)
                 if item['Count'] < count_all:
                     difference = count_all - item['Count']
