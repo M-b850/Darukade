@@ -4,7 +4,7 @@ import pandas as pd
 
 def export_json(result):
     """ Serializing json """
-    with open('sample/output.json', 'w') as f:
+    with open('src/sample/output.json', 'w') as f:
         # json_object = json.dumps(result, ensure_ascii=False, indent=4)
         json.dump(result, f, ensure_ascii=False, indent=4)
 
@@ -28,4 +28,4 @@ def export_exel(result):
             excel_result.append(r_dict)
     df = pd.DataFrame.from_dict(excel_result)
     print(df)
-    df.to_excel('src/sample.xlsx')
+    df.to_excel('src/sample/sample.xlsx')

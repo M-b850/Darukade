@@ -8,8 +8,11 @@ from bs4 import SoupStrainer as Strainer
 
 import grequests
 
+from pymongo import MongoClient
+
 import exporter
 import links as li
+
 
 # Start the Timer
 start_time = time.perf_counter()
@@ -94,7 +97,8 @@ def parse(data):
 resp = get_data(li.links)
 result = parse(resp)
 
-exporter.export_exel(result)
+# exporter.export_exel(result)
+exporter.export_json(result)
 
 fin = time.perf_counter() - start_time
 print(f'Process finished. \n --- {fin} seconds ---')
