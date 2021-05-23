@@ -10,6 +10,7 @@ from bs4 import BeautifulSoup as Soup
 from bs4 import SoupStrainer as Strainer
 
 from database import DB
+from utils import find_mic_detail, notenough
 import links as li
 
 # Start the Timer
@@ -25,20 +26,6 @@ def get_data(urls):
     req = (grequests.get(link) for link in urls)
     response = grequests.map(req)
     return response
-
-
-def find_mic_detail(status, pos):
-    if pos == 2:
-        tmp = status.split()
-        tmp.pop(1)
-        tmp.pop(0)
-        res = ' '.join(tmp)
-        return res
-    if pos == 1:
-        tmp = status.split()
-        tmp.pop(0)
-        res = ' '.join(tmp)
-        return res
 
 
 def main(data):
@@ -80,19 +67,20 @@ def main(data):
                     count_all += n
                     for i in range(n):
                         """ Each comment box content """
+                        dateuser = ids[i].text.strip().split('\n')
                         user_comment = {
-                            'InfoUpdateDate': datetime.datetime.utcnow(),
-                            'ProductPageLink': all_links[count],
-                            'ProductName': detail.find('h1').text.strip(),
-                            'Productcode': detail.find('span', {'class': 'code'}).text.strip(),
-                            'BrandNameFa': detail_brand.split('-')[0].strip(),
-                            'BrandNameEn': detail_brand.split('-')[1].strip(),
-                            'Group': Group,
-                            'CommentOwnerId': ids[i].text.strip().split('\n')[0].strip(),
-                            # It contains datetime so spilt them by \n
-                            'CommentDate': ids[i].text.strip().split('\n')[1].strip(),
-                            'CommentDescription': descriptions[i].text.strip().replace("\n", "")
+                        'InfoUpdateDate': datetime.datetime.utcnow(),
+                        'ProductPageLink': all_links[count],
+                        'ProductName': detail.find('h1').text.strip(),
+                        'Productcode': detail.find('span', {'class': 'code'}).text.strip(),
+                        'BrandNameFa': detail_brand.split('-')[0].strip(),
+                        'BrandNameEn': detail_brand.split('-')[1].strip(),
+                        'Group': Group,
+                        'CommentOwnerId': None if len(dateuser) == 1 else dateuser[0].strip(),
+                        'CommentDate': dateuser[0].strip() if len(dateuser) == 1 else dateuser[1].strip(),
+                        'CommentDescription': descriptions[i].text.strip().replace("\n", "")
                         }
+                        print(user_comment)
                         item_comments.append(user_comment)
                 if item['Count'] < count_all:
                     difference = count_all - item['Count']
@@ -115,18 +103,18 @@ def main(data):
                     count_all += n
                     for i in range(n):
                         """ Each comment box content """
+                        dateuser = ids[i].text.strip().split('\n')
                         user_comment = {
-                            'InfoUpdateDate': datetime.datetime.utcnow(),
-                            'ProductPageLink': all_links[count],
-                            'ProductName': detail.find('h1').text.strip(),
-                            'Productcode': detail.find('span', {'class': 'code'}).text.strip(),
-                            'BrandNameFa': detail_brand.split('-')[0].strip(),
-                            'BrandNameEn': detail_brand.split('-')[1].strip(),
-                            'Group': Group,
-                            'CommentOwnerId': ids[i].text.strip().split('\n')[0].strip(),
-                            # It contains datetime so spilt them by \n
-                            'CommentDate': ids[i].text.strip().split('\n')[1].strip(),
-                            'CommentDescription': descriptions[i].text.strip().replace("\n", "")
+                        'InfoUpdateDate': datetime.datetime.utcnow(),
+                        'ProductPageLink': all_links[count],
+                        'ProductName': detail.find('h1').text.strip(),
+                        'Productcode': detail.find('span', {'class': 'code'}).text.strip(),
+                        'BrandNameFa': detail_brand.split('-')[0].strip(),
+                        'BrandNameEn': detail_brand.split('-')[1].strip(),
+                        'Group': Group,
+                        'CommentOwnerId': None if len(dateuser) == 1 else dateuser[0].strip(),
+                        'CommentDate': dateuser[0].strip() if len(dateuser) == 1 else dateuser[1].strip(),
+                        'CommentDescription': descriptions[i].text.strip().replace("\n", "")
                         }
                         mydb.insert_one(user_comment)
 
@@ -137,7 +125,6 @@ def main(data):
                             }
                 mydb.items_col()
                 mydb.insert_one(item_detail)
-                
 
             bar()
             count += 1  # For links navigation
