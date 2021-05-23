@@ -2,7 +2,7 @@ from pymongo import MongoClient
 import datetime
 
 # Change the link if you're using diffrent database
-db_address = "mongodb://admin:password@localhost:8080/admin?authSource=admin"
+db_address = "mongodb://admin:password@localhost:8000/admin?authSource=admin"
 
 class DB:
 
@@ -13,7 +13,7 @@ class DB:
 	def connect(self):
 		""" Get connected to database. """
 		self.client = MongoClient(db_address)
-		if self.client: print('Connected.')
+		if self.client: print('~~~ Connected. ~~~\n')
 
 	def select_database(self, db_name):
 		""" Select database. """

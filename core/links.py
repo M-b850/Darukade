@@ -14,4 +14,4 @@ def add_links():
         for link in f:
             url = link.replace("\n", "")
             links.append(link)
-    print("Done!")
+    return links
