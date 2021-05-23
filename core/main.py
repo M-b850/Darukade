@@ -95,8 +95,11 @@ def main(data):
                         }
                         item_comments.append(user_comment)
                 if item['Count'] < count_all:
-                    for i in range(count_all - item['Count']):
-                        mydb.insert_one(item_comments[i])
+                    difference = count_all - item['Count']
+                    print(f'{difference} New comments to be added:')
+                    for i in range(difference):
+                        new_cm = mydb.insert_one(item_comments[i])
+                        print(new_cm.inserted_id)
                     item['Count'] = count_all
                     mydb.items_col()
                     mydb.save(item)
@@ -147,11 +150,11 @@ if __name__ == '__main__':
     mydb.connect()
     
     print('Wait for adding links...')
-    links = li.add_links()
+    all_links = li.add_links()
     print('~~~ Links processed! ~~~\n')
     print('---------------------------')
     print('Wait for the responses...\n')
-    resp = get_data(links)
+    resp = get_data(all_links)
     print('~~~~~ 200 OK ~~~~~ \n\n')
     result = main(resp)
     
